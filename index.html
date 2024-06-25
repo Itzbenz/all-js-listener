@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log All Events</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        #log {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 80vh;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Event Logger</h1>
+    <div id="log">Event log:</div>
+
+    <script>
+        const logDiv = document.getElementById('log');
+        const maxLogs = 20;
+
+        function logEvent(event) {
+            const logEntry = document.createElement('div');
+            logEntry.textContent = `Event: ${event.type}, Target: ${event.target.tagName}`;
+            logDiv.appendChild(logEntry);
+
+            // Remove old logs if there are more than maxLogs entries
+            while (logDiv.childElementCount > maxLogs) {
+                logDiv.removeChild(logDiv.firstChild);
+            }
+
+            logDiv.scrollTop = logDiv.scrollHeight; // Auto scroll to bottom
+        }
+
+        Object.keys(window).forEach(key => {
+            if (/^on/.test(key)) {
+                window.addEventListener(key.slice(2), logEvent);
+            }
+        });
+    </script>
+</body>
+</html>
