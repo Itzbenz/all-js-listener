@@ -26,15 +26,30 @@
     <script>
         const logDiv = document.getElementById('log');
         const maxLogs = 20;
+        const logMap = new Map();
 
         function logEvent(event) {
-            const logEntry = document.createElement('div');
-            logEntry.textContent = `Event: ${event.type}, Target: ${event.target.tagName}`;
-            logDiv.appendChild(logEntry);
+            const eventKey = `Event: ${event.type}, Target: ${event.target.tagName}`;
+            let logEntry = logMap.get(eventKey);
+
+            if (logEntry) {
+                // Increment the count if the event is already logged
+                logEntry.count += 1;
+                logEntry.element.textContent = `${eventKey} x${logEntry.count}`;
+            } else {
+                // Create a new log entry
+                logEntry = { element: document.createElement('div'), count: 1 };
+                logEntry.element.textContent = eventKey;
+                logMap.set(eventKey, logEntry);
+                logDiv.appendChild(logEntry.element);
+            }
 
             // Remove old logs if there are more than maxLogs entries
-            while (logDiv.childElementCount > maxLogs) {
-                logDiv.removeChild(logDiv.firstChild);
+            if (logDiv.childElementCount > maxLogs) {
+                const firstLog = logDiv.firstChild;
+                const firstLogKey = firstLog.textContent.replace(/ x\d+$/, '');
+                logDiv.removeChild(firstLog);
+                logMap.delete(firstLogKey);
             }
 
             logDiv.scrollTop = logDiv.scrollHeight; // Auto scroll to bottom
